@@ -1,103 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Student Management</title>
+<meta charset="UTF-8">
+<title>Student Management</title>
 
-  <style>
+<style>
+  body {
+    font-family: "Segoe UI", sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    padding: 30px;
+    margin: 0;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+  }
+
+  .card {
+    background: #f9fafb;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 5px solid #667eea;
+  }
+
+  h3 {
+    margin-top: 0;
+    color: #444;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px;
+    margin: 6px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+
+  button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  button:hover {
+    background: #4c51bf;
+  }
+
+  .danger {
+    background: #e53e3e;
+  }
+
+  .danger:hover {
+    background: #c53030;
+  }
+
+  .response-box {
+    margin-top: 25px;
+    padding: 15px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: #333;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+
+  table th, table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+
+  table th {
+    background: #667eea;
+    color: white;
+  }
+
+  @media (max-width: 600px) {
     body {
-      font-family: Arial, sans-serif;
-      background: #eef1f5;
-      padding: 30px;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
-    h3 {
-      margin-top: 25px;
-    }
-
-    input {
-      width: 100%;
       padding: 10px;
-      margin: 6px 0;
-      box-sizing: border-box;
     }
-
-    button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-      background: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-
-    button:hover {
-      background: #0056b3;
-    }
-
-    .danger {
-      background: #dc3545;
-    }
-
-    .danger:hover {
-      background: #a71d2a;
-    }
-
-    pre {
-      background: #f4f4f4;
-      padding: 10px;
-      margin-top: 10px;
-      overflow-x: auto;
-    }
-  </style>
+  }
+</style>
 </head>
 
 <body>
 
 <div class="container">
+  <h2>Student Management System</h2>
 
-  <h2>Student Management</h2>
+  <div class="grid">
 
-  <!-- ADD -->
-  <h3>Add Student</h3>
-  <input id="addName" placeholder="Name">
-  <input id="addAge" type="number" placeholder="Age">
-  <button onclick="addStudent()">Add</button>
+    <div class="card">
+      <h3>Add Student</h3>
+      <input id="addName" placeholder="Name">
+      <input id="addAge" type="number" placeholder="Age">
+      <button onclick="addStudent()">Add Student</button>
+    </div>
 
-  <!-- SHOW -->
-  <h3>Show All Students</h3>
-  <button onclick="getStudents()">Get Students</button>
+    <div class="card">
+      <h3>Update Student</h3>
+      <input id="updateId" type="number" placeholder="Student ID">
+      <input id="updateName" placeholder="New Name">
+      <input id="updateAge" type="number" placeholder="New Age">
+      <button onclick="updateStudent()">Update</button>
+    </div>
 
-  <!-- UPDATE -->
-  <h3>Update Student</h3>
-  <input id="updateId" type="number" placeholder="Student ID">
-  <input id="updateName" placeholder="New Name">
-  <input id="updateAge" type="number" placeholder="New Age">
-  <button onclick="updateStudent()">Update</button>
+    <div class="card">
+      <h3>Delete Student</h3>
+      <input id="deleteId" type="number" placeholder="Student ID">
+      <button class="danger" onclick="deleteStudent()">Delete</button>
+    </div>
 
-  <!-- DELETE -->
-  <h3>Delete Student</h3>
-  <input id="deleteId" type="number" placeholder="Student ID">
-  <button class="danger" onclick="deleteStudent()">Delete</button>
+    <div class="card">
+      <h3>Show Students</h3>
+      <button onclick="getStudents()">Load Students</button>
+    </div>
 
-  <h3>Response</h3>
-  <pre id="output"></pre>
+  </div>
+
+  <div class="response-box">
+    <h3>Students List</h3>
+    <div id="tableContainer">No data yet</div>
+    <p id="message"></p>
+  </div>
 
 </div>
 
@@ -105,56 +157,82 @@
 const API_URL = "http://localhost:8080/students";
 
 function addStudent() {
-  const name = addName.value;
-  const age = addAge.value;
-
-  if (!name || !age) return show("Enter name & age");
-
   fetch(API_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, age: Number(age) })
+    body: JSON.stringify({
+      name: addName.value,
+      age: Number(addAge.value)
+    })
   })
   .then(res => res.json())
-  .then(show)
-  .catch(show);
+  .then(data => {
+    showMessage("Student added successfully");
+    getStudents();
+  });
 }
 
 function getStudents() {
   fetch(API_URL)
     .then(res => res.json())
-    .then(show)
-    .catch(show);
+    .then(data => renderTable(data));
 }
 
 function updateStudent() {
-  const id = updateId.value;
-  const name = updateName.value;
-  const age = updateAge.value;
-
-  if (!id || !name || !age) return show("Fill all update fields");
-
-  fetch(`${API_URL}/${id}`, {
+  fetch(`${API_URL}/${updateId.value}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, age: Number(age) })
+    body: JSON.stringify({
+      name: updateName.value,
+      age: Number(updateAge.value)
+    })
   })
   .then(res => res.json())
-  .then(show)
-  .catch(show);
+  .then(() => {
+    showMessage("Student updated successfully");
+    getStudents();
+  });
 }
 
 function deleteStudent() {
-  const id = deleteId.value;
-  if (!id) return show("Enter ID to delete");
-
-  fetch(`${API_URL}/${id}`, { method: "DELETE" })
-    .then(() => show("Deleted successfully"))
-    .catch(show);
+  fetch(`${API_URL}/${deleteId.value}`, { method: "DELETE" })
+    .then(() => {
+      showMessage("Student deleted successfully");
+      getStudents();
+    });
 }
 
-function show(data) {
-  output.textContent = JSON.stringify(data, null, 2);
+function renderTable(data) {
+  if (data.length === 0) {
+    tableContainer.innerHTML = "No students found";
+    return;
+  }
+
+  let table = `
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Age</th>
+      </tr>
+  `;
+
+  data.forEach(s => {
+    table += `
+      <tr>
+        <td>${s.id}</td>
+        <td>${s.name}</td>
+        <td>${s.age}</td>
+      </tr>
+    `;
+  });
+
+  table += "</table>";
+  tableContainer.innerHTML = table;
+}
+
+function showMessage(msg) {
+  message.textContent = msg;
 }
 </script>
 
