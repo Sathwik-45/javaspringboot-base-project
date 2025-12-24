@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Management</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef1f5;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    h3 {
+      margin-top: 25px;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .danger {
+      background: #dc3545;
+    }
+
+    .danger:hover {
+      background: #a71d2a;
+    }
+
+    pre {
+      background: #f4f4f4;
+      padding: 10px;
+      margin-top: 10px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h2>Student Management</h2>
+
+  <!-- ADD -->
+  <h3>Add Student</h3>
+  <input id="addName" placeholder="Name">
+  <input id="addAge" type="number" placeholder="Age">
+  <button onclick="addStudent()">Add</button>
+
+  <!-- SHOW -->
+  <h3>Show All Students</h3>
+  <button onclick="getStudents()">Get Students</button>
+
+  <!-- UPDATE -->
+  <h3>Update Student</h3>
+  <input id="updateId" type="number" placeholder="Student ID">
+  <input id="updateName" placeholder="New Name">
+  <input id="updateAge" type="number" placeholder="New Age">
+  <button onclick="updateStudent()">Update</button>
+
+  <!-- DELETE -->
+  <h3>Delete Student</h3>
+  <input id="deleteId" type="number" placeholder="Student ID">
+  <button class="danger" onclick="deleteStudent()">Delete</button>
+
+  <h3>Response</h3>
+  <pre id="output"></pre>
+
+</div>
+
+<script>
+const API_URL = "http://localhost:8080/students";
+
+function addStudent() {
+  const name = addName.value;
+  const age = addAge.value;
+
+  if (!name || !age) return show("Enter name & age");
+
+  fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, age: Number(age) })
+  })
+  .then(res => res.json())
+  .then(show)
+  .catch(show);
+}
+
+function getStudents() {
+  fetch(API_URL)
+    .then(res => res.json())
+    .then(show)
+    .catch(show);
+}
+
+function updateStudent() {
+  const id = updateId.value;
+  const name = updateName.value;
+  const age = updateAge.value;
+
+  if (!id || !name || !age) return show("Fill all update fields");
+
+  fetch(`${API_URL}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, age: Number(age) })
+  })
+  .then(res => res.json())
+  .then(show)
+  .catch(show);
+}
+
+function deleteStudent() {
+  const id = deleteId.value;
+  if (!id) return show("Enter ID to delete");
+
+  fetch(`${API_URL}/${id}`, { method: "DELETE" })
+    .then(() => show("Deleted successfully"))
+    .catch(show);
+}
+
+function show(data) {
+  output.textContent = JSON.stringify(data, null, 2);
+}
+</script>
+
+</body>
+</html>
